@@ -4,8 +4,8 @@ use std::error::Error;
 use std::fmt::Debug;
 use std::str;
 
-const DEFAULT_PREFIX: &str = "Pr3";
-const DEFAULT_SUFFIX: &str = "$1X";
+pub const DEFAULT_PREFIX: &str = "Pr3";
+pub const DEFAULT_SUFFIX: &str = "$1X";
 const ARG_MACHINE_NAME: &str = "arg-machine-name";
 const ARG_ACCOUNT_NAME: &str = "arg-account-name";
 const ARG_SEED_PASSWORD: &str = "arg-seed-password";
