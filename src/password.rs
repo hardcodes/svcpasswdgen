@@ -7,6 +7,23 @@ fn get_sha512_digest(input: &str) -> Vec<u8> {
     digest.as_ref().to_vec()
 }
 
+#[test]
+fn get_sha512_digest_hello_world() {
+    // what we expect:
+    //
+    // ```bash
+    // echo "hello, world"|openssl dgst -sha512                                                                                1 ↵
+    // SHA2-512(stdin)= f65f341b35981fda842b09b2c8af9bcdb7602a4c2e6fa1f7d41f0974d3e3122f268fc79d5a4af66358f5133885cd1c165c916f80ab25e5d8d95db46f803c782c
+    // # or
+    // echo "hello, world"|sha512sum|cut -f 1 -d " "
+    // f65f341b35981fda842b09b2c8af9bcdb7602a4c2e6fa1f7d41f0974d3e3122f268fc79d5a4af66358f5133885cd1c165c916f80ab25e5d8d95db46f803c782c
+    let hex_result: String = get_sha512_digest("hello, world")
+        .iter()
+        .map(|x| format!("{:02x}", &x))
+        .collect();
+    assert_eq!("f65f341b35981fda842b09b2c8af9bcdb7602a4c2e6fa1f7d41f0974d3e3122f268fc79d5a4af66358f5133885cd1c165c916f80ab25e5d8d95db46f803c782c", hex_result);
+}
+
 // build sha512 hashes over all input values
 pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
     // build the hashes over the input values
