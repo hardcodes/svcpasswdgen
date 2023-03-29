@@ -3,7 +3,7 @@ name = "svcpasswdgen"
 version = "0.1.0"
 edition = "2021"
 authors = ["Sven Putze <sven.putze@tu-dortmund.de>"]
-description = "create deterministic passwords from input data"
+description = "Create deterministic passwords from input data"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

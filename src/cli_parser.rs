@@ -1,5 +1,5 @@
 use crate::{PROGRAM_AUTHORS, PROGRAM_DESCRIPTION, PROGRAM_NAME, PROGRAM_VERSION};
-use clap::{Arg, value_parser};
+use clap::{value_parser, Arg};
 use std::error::Error;
 use std::fmt::Debug;
 use std::str;
@@ -27,6 +27,7 @@ pub struct CliArguments {
     pub machine: String,
     pub account: String,
     pub seed: String,
+    pub length: u64,
     pub extra: Option<Vec<String>>,
 }
 
@@ -41,7 +42,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_PREFIX)
                 .long("prefix")
                 .value_name("PREFIX")
-                .help("Prefix that goes in front of the create password, e.g. P")
+                .help("Prefix that goes in front of the create password.")
                 .default_value(DEFAULT_PREFIX)
                 .num_args(1)
                 .required(false),
@@ -50,7 +51,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_SUFFIX)
                 .long("suffix")
                 .value_name("SUFFIX")
-                .help("Suffix that goes at the end of the create password, e.g. $")
+                .help("Suffix that goes at the end of the create password.")
                 .default_value(DEFAULT_SUFFIX)
                 .num_args(1)
                 .required(false),
@@ -59,7 +60,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_MACHINE_NAME)
                 .long("machine")
                 .value_name("MACHINE_NAME")
-                .help("name of the machine that the password is created for")
+                .help("name of the machine that the password is created for.")
                 .num_args(1)
                 .required(true),
         )
@@ -67,7 +68,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_ACCOUNT_NAME)
                 .long("account")
                 .value_name("ACCOUNT_NAME")
-                .help("name of the account that the password is created for")
+                .help("name of the account that the password is created for.")
                 .num_args(1)
                 .required(true),
         )
@@ -116,23 +117,19 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
             let env_seed_password = std::env::var(ENV_SEED_PASSWORD);
             match env_seed_password {
                 Ok(p) => p,
-                Err(_) => {
-                    rpassword::prompt_password("Enter seed password: ")?
-                }
+                Err(_) => rpassword::prompt_password("Enter seed password: ")?,
             }
         }
     };
 
     let extra: Option<Vec<String>> = if clap_arg_matches.contains_id(ARG_EXTRA_VALUE) {
-        Some(
-            {
-                let this = clap_arg_matches
-                        .get_many::<String>(ARG_EXTRA_VALUE)
-                        .unwrap()
-                        .map(|n| { n.to_string() });
-                FromIterator::from_iter(this)
-            },
-        )
+        Some({
+            let this = clap_arg_matches
+                .get_many::<String>(ARG_EXTRA_VALUE)
+                .unwrap()
+                .map(|n| n.to_string());
+            FromIterator::from_iter(this)
+        })
     } else {
         None
     };
@@ -155,6 +152,7 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
             .map(|f| f.to_string())
             .unwrap(),
         seed: seed_password,
+        length: *clap_arg_matches.get_one::<u64>(ARG_SHA_LEN).unwrap(),
         extra,
     })
 }
