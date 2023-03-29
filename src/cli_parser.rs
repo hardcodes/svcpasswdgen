@@ -4,8 +4,8 @@ use std::error::Error;
 use std::fmt::Debug;
 use std::str;
 
-const DEFAULT_PREFIX: &str = "Pz";
-const DEFAULT_SUFFIX: &str = "$";
+const DEFAULT_PREFIX: &str = "Pr3";
+const DEFAULT_SUFFIX: &str = "$1X";
 const ARG_MACHINE_NAME: &str = "arg-machine-name";
 const ARG_ACCOUNT_NAME: &str = "arg-account-name";
 const ARG_SEED_PASSWORD: &str = "arg-seed-password";
@@ -16,7 +16,7 @@ const ARG_SHA_LEN: &str = "arg-sha-len";
 
 const ENV_SEED_PASSWORD: &str = "SEED_PASSWD";
 
-const MIN_SHA_LEN: u64 = 16;
+const MIN_SHA_LEN: u64 = 20;
 const MAX_SHA_LEN: u64 = 128;
 
 /// Holds all command line arguments
