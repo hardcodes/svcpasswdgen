@@ -152,7 +152,9 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
             .map(|f| f.to_string())
             .ok_or("Cannot account name")?,
         seed: seed_password,
-        length: *clap_arg_matches.get_one::<u64>(ARG_SHA_LEN).ok_or("Cannot parse length")?,
+        length: *clap_arg_matches
+            .get_one::<u64>(ARG_SHA_LEN)
+            .ok_or("Cannot parse length")?,
         extra,
     })
 }
