@@ -1,20 +1,16 @@
-use sha2::{Sha512,Digest};
 use crate::cli_parser::CliArguments;
+use sha2::{Digest, Sha512};
 
 /// build sha512 hash from the given value.
-fn get_hashed(value: &str) -> Vec<u8>{
+fn get_hashed(value: &str) -> Vec<u8> {
     let mut hasher = Sha512::new();
     hasher.update(value.as_bytes());
     let hash_result = hasher.finalize();
-    let mut v = Vec::with_capacity(hash_result.len());
-    for index in 0..hash_result.len(){
-        v.push(hash_result[index]);
-    }
-    v
+    hash_result.to_vec()
 }
 
 // build sha512 hashes over all input values
-pub fn hash_cli_args(cli_args: &CliArguments)-> Vec<u8>{
+pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
     // build the hashes over the input values
     let mut passwd_hashes: Vec<u8> = Vec::new();
     passwd_hashes.append(&mut get_hashed(&cli_args.machine));
@@ -29,7 +25,7 @@ pub fn hash_cli_args(cli_args: &CliArguments)-> Vec<u8>{
 }
 
 /// build password, of prefix + result hash + suffix
-pub fn build_password(cli_args: &CliArguments, password_hashes: &Vec<u8>)-> String{
+pub fn build_password(cli_args: &CliArguments, password_hashes: &Vec<u8>) -> String {
     let mut passwd_hasher = Sha512::new();
     passwd_hasher.update(password_hashes);
     let result = passwd_hasher.finalize();
