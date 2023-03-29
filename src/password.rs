@@ -68,7 +68,12 @@ pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
 
 /// build password, of prefix + result hash + suffix
 pub fn build_password(cli_args: &CliArguments, password_hashes: &Vec<u8>) -> String {
-    let digest_result: String = digest::digest(&digest::SHA512, password_hashes)
+    //convert backup to string for same result as in cli
+    let hash: String = password_hashes
+        .iter()
+        .map(|x| format!("{:02x}", &x))
+        .collect();
+    let digest_result: String = digest::digest(&digest::SHA512, hash.as_bytes())
         .as_ref()
         .iter()
         .map(|x| format!("{:02x}", &x))
