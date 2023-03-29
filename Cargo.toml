@@ -9,5 +9,5 @@ description = "Create deterministic passwords from input data"
 
 [dependencies]
 clap = "4"
+ring = "0.16"
 rpassword = "7"
-sha2 = "0.10"
