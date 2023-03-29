@@ -3,10 +3,7 @@ use sha2::{Digest, Sha512};
 
 /// build sha512 hash from the given value.
 fn get_hashed(value: &str) -> Vec<u8> {
-    let mut hasher = Sha512::new();
-    hasher.update(value.as_bytes());
-    let hash_result = hasher.finalize();
-    hash_result.to_vec()
+    Sha512::digest(value).to_vec()
 }
 
 // build sha512 hashes over all input values
