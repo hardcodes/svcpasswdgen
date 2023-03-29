@@ -4,7 +4,7 @@ use std::error::Error;
 use std::fmt::Debug;
 use std::str;
 
-const DEFAULT_PREFIX: &str = "P";
+const DEFAULT_PREFIX: &str = "Pz";
 const DEFAULT_SUFFIX: &str = "$";
 const ARG_MACHINE_NAME: &str = "arg-machine-name";
 const ARG_ACCOUNT_NAME: &str = "arg-account-name";
@@ -112,7 +112,7 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
         true => clap_arg_matches
             .get_one::<String>(ARG_SEED_PASSWORD)
             .map(|f| f.to_string())
-            .unwrap(),
+            .ok_or("Cannot read seed passsword")?,
         false => {
             let env_seed_password = std::env::var(ENV_SEED_PASSWORD);
             match env_seed_password {
@@ -126,7 +126,7 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
         Some({
             let this = clap_arg_matches
                 .get_many::<String>(ARG_EXTRA_VALUE)
-                .unwrap()
+                .ok_or("Cannot read extra value")?
                 .map(|n| n.to_string());
             FromIterator::from_iter(this)
         })
@@ -138,21 +138,21 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
         prefix: clap_arg_matches
             .get_one::<String>(ARG_PREFIX)
             .map(|f| f.to_string())
-            .unwrap(),
+            .ok_or("Cannot read prefix")?,
         suffix: clap_arg_matches
             .get_one::<String>(ARG_SUFFIX)
             .map(|f| f.to_string())
-            .unwrap(),
+            .ok_or("Cannot read suffix")?,
         machine: clap_arg_matches
             .get_one::<String>(ARG_MACHINE_NAME)
             .map(|f| f.to_string())
-            .unwrap(),
+            .ok_or("Cannot read machine name")?,
         account: clap_arg_matches
             .get_one::<String>(ARG_ACCOUNT_NAME)
             .map(|f| f.to_string())
-            .unwrap(),
+            .ok_or("Cannot account name")?,
         seed: seed_password,
-        length: *clap_arg_matches.get_one::<u64>(ARG_SHA_LEN).unwrap(),
+        length: *clap_arg_matches.get_one::<u64>(ARG_SHA_LEN).ok_or("Cannot parse length")?,
         extra,
     })
 }
