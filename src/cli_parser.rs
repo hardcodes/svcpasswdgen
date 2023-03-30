@@ -103,6 +103,9 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
 
         svcpasswdgen --machine server001 --account superuser --seed passw0rd
         Pr3bc362aa50b489f0f4fc6$1X
+
+        svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra rack-042
+        Pr3fc88df44a89c3202cf8b$1X
         
         export SEED_PASSWD="passw0rd"
         svcpasswdgen --machine server001 --account superuser
@@ -112,6 +115,8 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
         svcpasswdgen --machine server001 --account superuser
         Enter seed password:
         Pr3bc362aa50b489f0f4fc6$1X
+
+
         "##,)
         .get_matches()
 }
