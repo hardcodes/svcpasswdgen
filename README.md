@@ -48,6 +48,37 @@ echo "Pr3${PASSWORD:0:20}\$1X"
 ```
 
 
+# Examples
+
+- Passing the seed password as argument
+
+    ```bash
+    svcpasswdgen --machine server001 --account superuser --seed passw0rd
+    Pr3bc362aa50b489f0f4fc6$1X
+    ```
+- Providing extra information that changes the resulting password.
+
+    ```bash
+    svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra rack-042
+    Pr3fc88df44a89c3202cf8b$1X
+    ```
+- Store the seed password in the environment variable `SEED_PASSWD`:
+
+    ```bash
+    export SEED_PASSWD="passw0rd"
+    svcpasswdgen --machine server001 --account superuser
+    Pr3bc362aa50b489f0f4fc6$1X
+    ```
+- Remove the seed password from the environment variable `SEED_PASSWD` and do not provide it at all:
+
+    ```bash
+    unset SEED_PASSWD
+    svcpasswdgen --machine server001 --account superuser
+    Enter seed password:
+    Pr3bc362aa50b489f0f4fc6$1X
+    ```
+
+
 # Compile and install
 
 Compiling probably works on any system that has a Rust compiler with standard library available.
