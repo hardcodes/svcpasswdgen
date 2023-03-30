@@ -4,15 +4,26 @@ Create deterministic passwords from input data.
 
 Imagine using a service account in a computer with the same password in each machine. If an attacker breaks into one of them and brute forces the password, every machine is lost.
 
-If you want to create an individual password for each machine without the need to store each password, `svcpasswdgen` enters the stage.
+If you want to create an individual password for each machine
+
+- without the need to store each password,
+  - by setting up an infrastructure, like hashicorp vault or
+  - by managing it manually in some sort of password manager,
+
+`svcpasswdgen` enters the stage.
 
 ![](./docs/gfx/svcpasswdgen.gif)
 
 **WARNING**: Protecting the seed password is imperative! Should an attacker get hold of this password, also every machine is lost! Think carefully before using this tool. It might not be the right choice for you.
 
+Using it on dedicated machines that are exclusively used for provisioning and can only create outgoing network connections may be a good start.
+
+Use a long seed password (as in >= 64 characters long).
+
+
 ## How does it work?
 
-`svcpassdgen` builds a sha512 sum over the given arguments
+`svcpassdgen` builds a sha512 sum (or digest) over the given arguments
 
 - `--machine`,
 - `--account`,
@@ -21,7 +32,9 @@ If you want to create an individual password for each machine without the need t
 
 Those are concatenated and a sha512 sum is build over the string representation of this value.
 
-The password results from the prefix the `--length` characters of the sha512 sum and the suffix. The prefix and suffix do not add any security, they simply help to satisfy password rules that need extra special characters.
+The password results from the prefix the `--length` characters of the final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy password rules that need extra special characters.
+
+**HINT**: The longer the resulting password, the better. But if you must enter it somewhere manually, there will be a trade-off between security and convenience.
 
 The same can be done in a Unix shell:
 
@@ -33,6 +46,22 @@ PASSWORD=$(echo -n "${PART1}${PART2}${PART3}"|sha512sum|cut -d " " -f 1)
 echo "Pr3${PASSWORD:0:20}\$1X"
 #Pr3bc362aa50b489f0f4fc6$1X
 ```
+
+
+# Compile and install
+
+Compiling probably works on any system that has a Rust compiler with standard library available.
+
+Head over to [www.rust-lang.org](https://www.rust-lang.org/tools/install) and follow the instructions if you don't have a Rust compiler installed yet.
+
+```bash
+# clone and compile the code
+git clone https://github.com/hardcodes/svcpasswdgen.git
+cd svcpasswdgen
+cargo build --release
+```
+
+After that copy the file `target/release/svcpasswdgen` to a directory of your liking.
 
 ------
 
