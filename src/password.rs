@@ -1,4 +1,4 @@
-use crate::cli_parser::CliArguments;
+use crate::{cli_parser::CliArguments, base64_trait::Base64StringConversions};
 use ring::digest;
 
 /// build sha512 hash from the given value.
@@ -66,8 +66,8 @@ pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
     passwd_hashes
 }
 
-/// build password, of prefix + result hash + suffix
-pub fn build_password(cli_args: &CliArguments, password_hashes: &Vec<u8>) -> String {
+/// build password, of prefix + base64 encoded result hash + suffix
+pub fn build_password(cli_args: &CliArguments, password_hashes: &[u8]) -> String {
     //convert backup to string for same result as in cli
     let hash: String = password_hashes
         .iter()
@@ -79,8 +79,9 @@ pub fn build_password(cli_args: &CliArguments, password_hashes: &Vec<u8>) -> Str
         .map(|x| format!("{:02x}", &x))
         .collect();
     let mut password = cli_args.prefix.clone();
-    let used_hash = &digest_result[..cli_args.length as usize];
-    password.push_str(used_hash);
+    let base64_digest_result = digest_result.to_base64_urlsafe_encoded();
+    let used_digest_part = &base64_digest_result[..cli_args.length as usize];
+    password.push_str(used_digest_part);
     password.push_str(&cli_args.suffix);
     password
 }

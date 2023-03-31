@@ -1,3 +1,4 @@
+pub mod base64_trait;
 pub mod cli_parser;
 pub mod password;
 

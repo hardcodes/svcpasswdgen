@@ -48,5 +48,5 @@ fn build_password_server001superuserpassw0rd() {
     assert_eq!("bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12fcefd91fa15a5149884d30e3b0a6aebd734d55a7a12559b66aa93f3a675fa71d", digest_result);
 
     let password = build_password(&cli_args, &hash_cli_args(&cli_args));
-    assert_eq!("Pr3bc362aa50b489f0f4fc6$1X", password);
+    assert_eq!("Pr3YmMzNjJhYTUwYjQ4OWYw$1X", password);
 }

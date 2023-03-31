@@ -1,4 +1,4 @@
-# svcpasswdgen
+# svcpasswdgen -  service account password generator
 
 Create deterministic passwords from input data.
 
@@ -18,7 +18,7 @@ If you want to create an individual password for each machine
 
 Using it on dedicated machines that are exclusively used for provisioning and can only create outgoing network connections may be a good start.
 
-Use a long seed password (as in >= 64 characters long).
+Use a long seed password (as in >= 64 characters long) to protect yourself against attackers brute forcing it.
 
 
 ## How does it work?
@@ -30,9 +30,9 @@ Use a long seed password (as in >= 64 characters long).
 - `--seed` and
 - optional as many `--extra` as you pass in.
 
-Those are concatenated and a sha512 sum is build over the string representation of this value.
+Those are concatenated and a sha512 sum is build over the string representation of this value. To get a bigger used alphabet it is then base64 encoded.
 
-The password results from the prefix the `--length` characters of the final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy password rules that need extra special characters.
+The password results from the prefix, the `--length` characters of the base64 encoded final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy all of your possible password rules that need extra special characters.
 
 **HINT**: The longer the resulting password, the better. But if you must enter it somewhere manually, there will be a trade-off between security and convenience.
 
@@ -42,9 +42,9 @@ The same can be done in a Unix shell:
 PART1=$(echo -n "server001"|sha512sum|cut -d " " -f 1)
 PART2=$(echo -n "superuser"|sha512sum|cut -d " " -f 1)
 PART3=$(echo -n "passw0rd"|sha512sum|cut -d " " -f 1)
-PASSWORD=$(echo -n "${PART1}${PART2}${PART3}"|sha512sum|cut -d " " -f 1)
+PASSWORD=$(echo -n "${PART1}${PART2}${PART3}"|sha512sum|cut -d " " -f 1|base64 -w 0)
 echo "Pr3${PASSWORD:0:20}\$1X"
-#Pr3bc362aa50b489f0f4fc6$1X
+#Pr3YmMzNjJhYTUwYjQ4OWYw$1X
 ```
 
 
@@ -54,20 +54,20 @@ echo "Pr3${PASSWORD:0:20}\$1X"
 
     ```bash
     svcpasswdgen --machine server001 --account superuser --seed passw0rd
-    Pr3bc362aa50b489f0f4fc6$1X
+    Pr3YmMzNjJhYTUwYjQ4OWYw$1X
     ```
 - Providing extra information that changes the resulting password.
 
     ```bash
     svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra rack-042
-    Pr3fc88df44a89c3202cf8b$1X
+    Pr3ZmM4OGRmNDRhODljMzIw$1X
     ```
 - Store the seed password in the environment variable `SEED_PASSWD`:
 
     ```bash
     export SEED_PASSWD="passw0rd"
     svcpasswdgen --machine server001 --account superuser
-    Pr3bc362aa50b489f0f4fc6$1X
+    Pr3YmMzNjJhYTUwYjQ4OWYw$1X
     ```
 - Remove the seed password from the environment variable `SEED_PASSWD` and do not provide it at all:
 
@@ -75,7 +75,7 @@ echo "Pr3${PASSWORD:0:20}\$1X"
     unset SEED_PASSWD
     svcpasswdgen --machine server001 --account superuser
     Enter seed password:
-    Pr3bc362aa50b489f0f4fc6$1X
+    Pr3YmMzNjJhYTUwYjQ4OWYw$1X
     ```
 
 
