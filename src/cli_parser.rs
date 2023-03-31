@@ -42,7 +42,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_PREFIX)
                 .long("prefix")
                 .value_name("PREFIX")
-                .help("Prefix that goes in front of the create password.")
+                .help("Prefix that goes in front of the created password (satisfy password rules).")
                 .default_value(DEFAULT_PREFIX)
                 .num_args(1)
                 .required(false),
@@ -51,7 +51,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_SUFFIX)
                 .long("suffix")
                 .value_name("SUFFIX")
-                .help("Suffix that goes at the end of the create password.")
+                .help("Suffix that goes at the end of the created password (satisfy password rules).")
                 .default_value(DEFAULT_SUFFIX)
                 .num_args(1)
                 .required(false),
@@ -84,7 +84,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
             Arg::new(ARG_SHA_LEN)
                 .long("length")
                 .value_name("LENGTH")
-                .help("Length of the sha portion of the created password.")
+                .help("Length of the derived portion of the created password.")
                 .num_args(1)
                 .default_value(min_len)
                 .value_parser(value_parser!(u64).range(MIN_SHA_LEN..=MAX_SHA_LEN))
@@ -106,6 +106,9 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
 
         svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra rack-042
         Pr3fc88df44a89c3202cf8b$1X
+
+        svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra row-17 --extra rack-042
+        Pr3ZDAzMjRlNzNkMGM4ZjRm$1X
         
         export SEED_PASSWD="passw0rd"
         svcpasswdgen --machine server001 --account superuser
