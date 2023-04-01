@@ -1,6 +1,6 @@
 [package]
 name = "svcpasswdgen"
-version = "1.2.1"
+version = "1.2.2"
 edition = "2021"
 authors = ["Sven Putze <sven.putze@tu-dortmund.de>"]
 description = "Create deterministic passwords from input data"
