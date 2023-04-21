@@ -12,6 +12,9 @@ pub trait Base64StringConversions<T> {
     /// convert a string slice to a base64 encoded String.
     fn to_base64_encoded(&self) -> String;
 
+    /// convert a string slice to a base64 encoded String.
+    fn to_base64_encoded_no_padding(&self) -> String;
+
     /// convert a string slice to a url safe base64 encoded String.
     fn to_base64_urlsafe_encoded(&self) -> String;
 }
@@ -25,6 +28,13 @@ where
         T: AsRef<[u8]>,
     {
         general_purpose::STANDARD.encode(self)
+    }
+
+    fn to_base64_encoded_no_padding(&self) -> String
+    where
+        T: AsRef<[u8]>,
+    {
+        general_purpose::STANDARD_NO_PAD.encode(self)
     }
 
     fn to_base64_urlsafe_encoded(&self) -> String

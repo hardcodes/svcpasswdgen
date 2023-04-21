@@ -1,4 +1,9 @@
-use crate::{cli_parser::CliArguments, base64_trait::Base64StringConversions};
+use crate::{base64_trait::Base64StringConversions, cli_parser::CliArguments};
+use crate::{ARGON2_MEMORY_COST, ARGON2_NUM_ITERATIONS, ARGON2_OUTPUT_LENGTH, ARGON2_NUM_PARALLEL_THREADS};
+use argon2::{
+    password_hash::{PasswordHasher, SaltString},
+    Algorithm, Argon2, Params, Version,
+};
 use ring::digest;
 
 /// build sha512 hash from the given value.
@@ -51,7 +56,16 @@ fn get_sha512_digest_passw0rd() {
     assert_eq!("e0469addd8d57a3623494096dabc19bebca1a038c9da696940b3f853d106a6ecfa5bd60ce8e72884efa3bd92b930da178fd616f40facad654212d7c2f8817dd4", hex_result);
 }
 
-// build sha512 hashes over all input values
+#[test]
+fn get_sha512_digest_server001superuser() {
+    let hex_result: String = get_sha512_digest("server001superuser")
+        .iter()
+        .map(|x| format!("{:02x}", &x))
+        .collect();
+    assert_eq!("cddab6bb2eaeaef88d39998fbd3aba5a88d7c378c300cdbcc162c5dedc3472de33873987731e95c7c0f0642a9ffefe7140ca255e797875015abb74a28f746125", hex_result);
+}
+
+/// build sha512 hashes over all input values
 pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
     // build the hashes over the input values
     let mut passwd_hashes: Vec<u8> = Vec::new();
@@ -66,9 +80,10 @@ pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
     passwd_hashes
 }
 
-/// build password, of prefix + base64 encoded result hash + suffix
-pub fn build_password(cli_args: &CliArguments, password_hashes: &[u8]) -> String {
-    //convert backup to string for same result as in cli
+/// build a sha512 hash over all password hashes
+/// and return the first 120 characters as `String`.
+pub fn first120_from_full_sha512_hash(password_hashes: &[u8]) -> String {
+    //convert binary hashes to string representation for same result as in cli
     let hash: String = password_hashes
         .iter()
         .map(|x| format!("{:02x}", &x))
@@ -78,8 +93,61 @@ pub fn build_password(cli_args: &CliArguments, password_hashes: &[u8]) -> String
         .iter()
         .map(|x| format!("{:02x}", &x))
         .collect();
+    let first120 = &digest_result[..120];
+    first120.to_string()
+}
+
+/// Create a salt for the argon2 hash.
+/// Use input values `--machine` and `--account`.
+pub fn create_argon2_salt(cli_args: &CliArguments) -> String {
+    let mut salt = cli_args.machine.to_owned();
+    salt.push_str(&cli_args.account);
+    let mut passwd_hash: Vec<u8> = Vec::new();
+    passwd_hash.append(&mut get_sha512_digest(&salt));
+    let hash: String = passwd_hash.iter().map(|x| format!("{:02x}", &x)).collect();
+    let first32 = &hash[..32];
+    // mimic the argon2 command and encode the password before using it.
+    first32.to_base64_encoded_no_padding()
+}
+
+/// build an argon2 hash
+pub fn create_argon2_hash(input: &str, salt: &str) -> String {
+    let params = Params::new(
+        ARGON2_MEMORY_COST,
+        ARGON2_NUM_ITERATIONS,
+        ARGON2_NUM_PARALLEL_THREADS,
+        Some(ARGON2_OUTPUT_LENGTH),
+    )
+    .unwrap();
+    let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
+    // we have only characters a-z0-9 in the `&str`, so we can treat it as base64 encoded.
+    let salt_from_b64 = SaltString::from_b64(salt).unwrap();
+    let password_hash = argon2
+        .hash_password(input.as_bytes(), salt_from_b64.as_salt())
+        .unwrap();
+    // argon2 command creates this output:
+    // $argon2id$v=19$m=65536,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$mEa6lbt2dfxqG04WsNUiYKYOwBQOe0EVABzuyPnuNt0
+    // password_hash from this function is
+    // $argon2id$v=19$m=65635,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$wWkqwzaerPGqk4o11lQup4MdYm3EdrH0zlBapeqY2YY
+    //
+    // salt does match, hash not; is the argon2 doing something with the input or is it a "problem" with the argon2 crate?
+    println!("password_hash = {}", &password_hash);
+    let hash: String = password_hash
+        .hash
+        .unwrap()
+        .as_bytes()
+        .iter()
+        .map(|x| format!("{:02x}", &x))
+        .collect();
+    hash.to_base64_encoded_no_padding()
+
+    // TODO: sha512sum and base64 encoding
+}
+
+/// build password, of prefix + base64 encoded argon2 hash + suffix
+pub fn build_password(cli_args: &CliArguments, argon2_hash: &str) -> String {
     let mut password = cli_args.prefix.clone();
-    let base64_digest_result = digest_result.to_base64_urlsafe_encoded();
+    let base64_digest_result = argon2_hash.to_base64_urlsafe_encoded();
     let used_digest_part = &base64_digest_result[..cli_args.length as usize];
     password.push_str(used_digest_part);
     password.push_str(&cli_args.suffix);
