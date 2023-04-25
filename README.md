@@ -60,31 +60,27 @@ echo "SHA512SUM    :  ${SHA512SUM}"
 echo "used password:  ${USEDPWD}\n"
 ARGON2=$(echo -n "${USEDPWD}"|argon2 "${SALT}" -id -t 10 -m 16 -l 32 -v 13)
 echo ${ARGON2}
-
-# OUTPUT
-################################################################
-#
-# SALT         :  cddab6bb2eaeaef88d39998fbd3aba5a
-# SHA512SUM    :  bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12fcefd91fa15a5149884d30e3b0a6aebd734d55a7a12559b66aa93f3a675fa71d
-# used password:  bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12fcefd91fa15a5149884d30e3b0a6aebd734d55a7a12559b66aa93f3a
-# 
-# Type:           Argon2id
-# Iterations:     10
-# Memory:         65536 KiB
-# Parallelism:    1
-# Hash:           9846ba95bb7675fc6a1b4e16b0d52260a60ec0140e7b4115001ceec8f9ee36dd
-# Encoded:        $argon2id$v=19$m=65536,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$mEa6lbt2dfxqG04WsNUiYKYOwBQOe0EVABzuyPnuNt0
-# 0.319 seconds
-# Verification ok
-
 ARGON2SHA512=$(echo -n "${ARGON2}"|grep "Hash:"|sed -E -e 's/\s//g'|cut -d ":" -f 2|xxd -r -p|base64 -w 0|sed -e 's/=//g'|sha512sum|cut -d " " -f 1)
 PASSWORD=$(echo -n ${ARGON2SHA512}|base64 -w 0)
 echo "Pr3${PASSWORD:0:20}\$1X"
+```
 
-# OUTPUT
-################################################################
-#
-# Pr3ZWMwMDgyMjUwYTUyOTRh$1X
+**output**
+
+```
+SALT         :  cddab6bb2eaeaef88d39998fbd3aba5a
+SHA512SUM    :  bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12fcefd91fa15a5149884d30e3b0a6aebd734d55a7a12559b66aa93f3a675fa71d
+used password:  bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12fcefd91fa15a5149884d30e3b0a6aebd734d55a7a12559b66aa93f3a
+
+Type:		Argon2id
+Iterations:	10
+Memory:		65536 KiB
+Parallelism:	1
+Hash:		9846ba95bb7675fc6a1b4e16b0d52260a60ec0140e7b4115001ceec8f9ee36dd
+Encoded:	$argon2id$v=19$m=65536,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$mEa6lbt2dfxqG04WsNUiYKYOwBQOe0EVABzuyPnuNt0
+0.352 seconds
+Verification ok
+Pr3ZWMwMDgyMjUwYTUyOTRh$1X
 ```
 
 

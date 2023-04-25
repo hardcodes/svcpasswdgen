@@ -1,9 +1,12 @@
 use crate::{base64_trait::Base64StringConversions, cli_parser::CliArguments};
-use crate::{ARGON2_MEMORY_COST, ARGON2_NUM_ITERATIONS, ARGON2_OUTPUT_LENGTH, ARGON2_NUM_PARALLEL_THREADS};
+use crate::{
+    ARGON2_MEMORY_COST, ARGON2_NUM_ITERATIONS, ARGON2_NUM_PARALLEL_THREADS, ARGON2_OUTPUT_LENGTH,
+};
 use argon2::{
     password_hash::{PasswordHasher, SaltString},
     Algorithm, Argon2, Params, Version,
 };
+use base64::{engine::general_purpose, Engine as _};
 use ring::digest;
 
 /// build sha512 hash from the given value.
@@ -122,32 +125,22 @@ pub fn create_argon2_hash(input: &str, salt: &str) -> String {
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
     // we have only characters a-z0-9 in the `&str`, so we can treat it as base64 encoded.
     let salt_from_b64 = SaltString::from_b64(salt).unwrap();
-    let password_hash = argon2
+    let argon2_password_hash = argon2
         .hash_password(input.as_bytes(), salt_from_b64.as_salt())
         .unwrap();
-    // argon2 command creates this output:
-    // $argon2id$v=19$m=65536,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$mEa6lbt2dfxqG04WsNUiYKYOwBQOe0EVABzuyPnuNt0
-    // password_hash from this function is
-    // $argon2id$v=19$m=65635,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$wWkqwzaerPGqk4o11lQup4MdYm3EdrH0zlBapeqY2YY
-    //
-    // salt does match, hash not; is the argon2 doing something with the input or is it a "problem" with the argon2 crate?
-    println!("password_hash = {}", &password_hash);
-    let hash: String = password_hash
-        .hash
-        .unwrap()
-        .as_bytes()
-        .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
-    hash.to_base64_encoded_no_padding()
-
-    // TODO: sha512sum and base64 encoding
+    println!("argon2_password_hash = {}", &argon2_password_hash);
+    general_purpose::STANDARD_NO_PAD.encode(&argon2_password_hash.hash.unwrap().as_bytes())
 }
 
 /// build password, of prefix + base64 encoded argon2 hash + suffix
 pub fn build_password(cli_args: &CliArguments, argon2_hash: &str) -> String {
+    let argon2_hash_sha512 = get_sha512_digest(argon2_hash);
+    let agron2_sha512_hash: String = argon2_hash_sha512
+        .iter()
+        .map(|x| format!("{:02x}", &x))
+        .collect();
     let mut password = cli_args.prefix.clone();
-    let base64_digest_result = argon2_hash.to_base64_urlsafe_encoded();
+    let base64_digest_result = agron2_sha512_hash.to_base64_urlsafe_encoded();
     let used_digest_part = &base64_digest_result[..cli_args.length as usize];
     password.push_str(used_digest_part);
     password.push_str(&cli_args.suffix);
