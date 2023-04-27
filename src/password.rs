@@ -128,7 +128,6 @@ pub fn create_argon2_hash(input: &str, salt: &str) -> String {
     let argon2_password_hash = argon2
         .hash_password(input.as_bytes(), salt_from_b64.as_salt())
         .unwrap();
-    println!("argon2_password_hash = {}", &argon2_password_hash);
     general_purpose::STANDARD_NO_PAD.encode(&argon2_password_hash.hash.unwrap().as_bytes())
 }
 

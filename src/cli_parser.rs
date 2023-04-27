@@ -102,22 +102,22 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
         # EXAMPLES
 
         svcpasswdgen --machine server001 --account superuser --seed passw0rd
-        Pr3YmMzNjJhYTUwYjQ4OWYw$1X
+        Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 
         svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra rack-042
-        Pr3ZmM4OGRmNDRhODljMzIw$1X
+        Pr3MjVhNTBjNTFkMzU2NTIy$1X
 
         svcpasswdgen --machine server001 --account superuser --seed passw0rd --extra row-17 --extra rack-042
-        Pr3ZDAzMjRlNzNkMGM4ZjRm$1X
+        Pr3M2I5ZjA0YmQ2OWEyMmEz$1X
         
         export SEED_PASSWD="passw0rd"
         svcpasswdgen --machine server001 --account superuser
-        Pr3YmMzNjJhYTUwYjQ4OWYw$1X
+        Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 
         unset SEED_PASSWD
         svcpasswdgen --machine server001 --account superuser
         Enter seed password:
-        Pr3YmMzNjJhYTUwYjQ4OWYw$1X
+        Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 
 
         "##,)

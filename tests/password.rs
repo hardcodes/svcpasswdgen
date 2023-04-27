@@ -1,6 +1,9 @@
 use ring::digest;
 use svcpasswdgen::cli_parser::{CliArguments, DEFAULT_PREFIX, DEFAULT_SUFFIX};
-use svcpasswdgen::password::{first120_from_full_sha512_hash, hash_cli_args, create_argon2_salt};
+use svcpasswdgen::password::{
+    build_password, create_argon2_hash, create_argon2_salt, first120_from_full_sha512_hash,
+    hash_cli_args,
+};
 
 const SERVER001: &str = "server001";
 const SUPERUSER: &str = "superuser";
@@ -54,7 +57,9 @@ fn build_password_server001superuserpassw0rd() {
     let salt = create_argon2_salt(&cli_args);
     assert_eq!("Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE", salt);
 
-    // TODO: test argon2 hash
+    let argon2_hash = create_argon2_hash(&first120, &salt);
+    assert_eq!("hlfAJAVBleLuYqnXJmO/3adUAYGHvMtghtYYlBb0c7I", argon2_hash);
 
-    // TODO: test final password
+    let password = build_password(&cli_args, &argon2_hash);
+    assert_eq!("Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X", password);
 }

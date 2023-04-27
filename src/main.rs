@@ -17,10 +17,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     // build argon2id hash
     let salt = create_argon2_salt(&cli_args);
     let argon2_hash = create_argon2_hash(&first120, &salt);
-    println!("argon2_hash = {}", &argon2_hash);
 
     // build the final password
     let password = build_password(&cli_args, &argon2_hash);
-    println!("password = {}", &password);
+    println!("{}", &password);
     Ok(())
 }

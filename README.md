@@ -37,11 +37,7 @@ Use a long seed password (as in >= 64 characters long) to protect yourself again
 2. `--machine`, `--account` are concatenated as a string and a sha512 sum is build over it. The first 32 characters are used to build a *salt* value for the `argon2` hash algorithm.
 
   The result is then base64 encoded with no padding mimic the `argon2` cli tool.
-3. 
-
- To get a bigger used alphabet it is then base64 encoded.
-
-The password results from the prefix, the `--length` characters of the base64 encoded final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy all of your possible password rules that need extra special characters.
+3. The password results from the prefix, the `--length` characters of the base64 encoded final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy all of your possible password rules that need extra special characters.
 
 **HINT**: The longer the resulting password, the better. But if you must enter it somewhere manually, there will be a trade-off between security and convenience.
 
@@ -58,7 +54,7 @@ USEDPWD=$(echo -n "${SHA512SUM:0:120}")
 echo "SALT         :  ${SALT}"
 echo "SHA512SUM    :  ${SHA512SUM}"
 echo "used password:  ${USEDPWD}\n"
-ARGON2=$(echo -n "${USEDPWD}"|argon2 "${SALT}" -id -t 10 -m 16 -l 32 -v 13)
+ARGON2=$(echo -n "${USEDPWD}"|argon2 "${SALT}" -id -t 50 -m 16 -l 32 -v 13)
 echo ${ARGON2}
 ARGON2SHA512=$(echo -n "${ARGON2}"|grep "Hash:"|sed -E -e 's/\s//g'|cut -d ":" -f 2|xxd -r -p|base64 -w 0|sed -e 's/=//g'|sha512sum|cut -d " " -f 1)
 PASSWORD=$(echo -n ${ARGON2SHA512}|base64 -w 0)
@@ -73,14 +69,14 @@ SHA512SUM    :  bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12
 used password:  bc362aa50b489f0f4fc6594aca3a6b24093fb507d7813e15493ca791a2fe2e12fcefd91fa15a5149884d30e3b0a6aebd734d55a7a12559b66aa93f3a
 
 Type:		Argon2id
-Iterations:	10
+Iterations:	50
 Memory:		65536 KiB
 Parallelism:	1
-Hash:		9846ba95bb7675fc6a1b4e16b0d52260a60ec0140e7b4115001ceec8f9ee36dd
-Encoded:	$argon2id$v=19$m=65536,t=10,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$mEa6lbt2dfxqG04WsNUiYKYOwBQOe0EVABzuyPnuNt0
-0.352 seconds
+Hash:		8657c024054195e2ee62a9d72663bfdda754018187bccb6086d6189416f473b2
+Encoded:	$argon2id$v=19$m=65536,t=50,p=1$Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE$hlfAJAVBleLuYqnXJmO/3adUAYGHvMtghtYYlBb0c7I
+1.615 seconds
 Verification ok
-Pr3ZWMwMDgyMjUwYTUyOTRh$1X
+Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 ```
 
 
