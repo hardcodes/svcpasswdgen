@@ -87,8 +87,8 @@ Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 echo -n "${SALT}"|base64 -w 0|sed -e 's/=//g'
 # Y2RkYWI2YmIyZWFlYWVmODhkMzk5OThmYmQzYWJhNWE
 # validate hash
-echo -n "9846ba95bb7675fc6a1b4e16b0d52260a60ec0140e7b4115001ceec8f9ee36dd"|xxd -r -p|base64 -w 0|sed -e 's/=//g'
-# mEa6lbt2dfxqG04WsNUiYKYOwBQOe0EVABzuyPnuNt0
+echo -n "8657c024054195e2ee62a9d72663bfdda754018187bccb6086d6189416f473b2"|xxd -r -p|base64 -w 0|sed -e 's/=//g'
+# hlfAJAVBleLuYqnXJmO/3adUAYGHvMtghtYYlBb0c7I
 #
 # OK, both values match encoded ouput
 ```
