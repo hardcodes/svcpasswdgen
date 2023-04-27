@@ -123,12 +123,11 @@ pub fn create_argon2_hash(input: &str, salt: &str) -> String {
     )
     .unwrap();
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
-    // we have only characters a-z0-9 in the `&str`, so we can treat it as base64 encoded.
     let salt_from_b64 = SaltString::from_b64(salt).unwrap();
     let argon2_password_hash = argon2
         .hash_password(input.as_bytes(), salt_from_b64.as_salt())
         .unwrap();
-    general_purpose::STANDARD_NO_PAD.encode(&argon2_password_hash.hash.unwrap().as_bytes())
+    general_purpose::STANDARD_NO_PAD.encode(argon2_password_hash.hash.unwrap().as_bytes())
 }
 
 /// build password, of prefix + base64 encoded argon2 hash + suffix
