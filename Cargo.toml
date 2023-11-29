@@ -1,6 +1,6 @@
 [package]
 name = "svcpasswdgen"
-version = "2.0.0"
+version = "2.1.0"
 edition = "2021"
 authors = ["Sven Putze <sven.putze@tu-dortmund.de>"]
 description = "Create deterministic passwords from input data"
@@ -12,9 +12,15 @@ anyhow = "1"
 argon2 = "0.5.0"
 base64 = "0.21.0"
 clap = "4"
+copypasta = "0.10.0"
 ring = "0.16"
 rpassword = "7"
 
 
 [profile.release]
+# Strip symbols to reduce binary size
 strip = "symbols"
+# Enable Link Time Optimization (LTO) to reduce binary size (longer build times)
+lto = true
+# Reduce parallel code generation units to increase optimization and reduce binary size (longer build times)
+codegen-units = 1

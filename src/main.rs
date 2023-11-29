@@ -1,5 +1,6 @@
 use std::error::Error;
 use svcpasswdgen::cli_parser::get_config;
+use svcpasswdgen::clipboard::paste_to_clipboard;
 use svcpasswdgen::password::{
     build_password, create_argon2_hash, create_argon2_salt, first120_from_full_sha512_hash,
     hash_cli_args,
@@ -20,6 +21,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // build the final password
     let password = build_password(&cli_args, &argon2_hash);
-    println!("{}", &password);
+    match cli_args.flags.paste_password_to_clipboard {
+        false => {
+            println!("{}", &password);
+        }
+        true => {
+            paste_to_clipboard(&password)?;
+        }
+    };
+
     Ok(())
 }

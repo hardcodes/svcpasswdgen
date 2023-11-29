@@ -8,6 +8,7 @@ use argon2::{
 };
 use base64::{engine::general_purpose, Engine as _};
 use ring::digest;
+use std::fmt::Write;
 
 /// build sha512 hash from the given value.
 fn get_sha512_digest(input: &str) -> Vec<u8> {
@@ -27,8 +28,10 @@ fn get_sha512_digest_hello_world() {
     // 8710339dcb6814d0d9d2290ef422285c9322b7163951f9a0ca8f883d3305286f44139aa374848e4174f5aada663027e4548637b6d19894aec4fb6c46a139fbf9
     let hex_result: String = get_sha512_digest("hello, world")
         .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+        .fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b:02x}");
+            output
+        });
     assert_eq!("8710339dcb6814d0d9d2290ef422285c9322b7163951f9a0ca8f883d3305286f44139aa374848e4174f5aada663027e4548637b6d19894aec4fb6c46a139fbf9", hex_result);
 }
 
@@ -36,8 +39,10 @@ fn get_sha512_digest_hello_world() {
 fn get_sha512_digest_server001() {
     let hex_result: String = get_sha512_digest("server001")
         .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+        .fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b:02x}");
+            output
+        });
     assert_eq!("160cd0d973e5b5ce5c245b9338e1ee0016c7b4d5f162a2596f5ed2d04bcee21095921b1f22936b3c700c4ed092001f74a54d9ce8ae83c50dbb5ea2e91562e005", hex_result);
 }
 
@@ -45,8 +50,10 @@ fn get_sha512_digest_server001() {
 fn get_sha512_digest_superuser() {
     let hex_result: String = get_sha512_digest("superuser")
         .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+        .fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b:02x}");
+            output
+        });
     assert_eq!("2cff38a527697f0c8df41a644671718d7d139c9b6d836e126b62677d8b57b1598874b6b0595c10358f59ca4e943d8fd2aa57327db011a421a80ec65945ea210b", hex_result);
 }
 
@@ -54,8 +61,10 @@ fn get_sha512_digest_superuser() {
 fn get_sha512_digest_passw0rd() {
     let hex_result: String = get_sha512_digest("passw0rd")
         .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+        .fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b:02x}");
+            output
+        });
     assert_eq!("e0469addd8d57a3623494096dabc19bebca1a038c9da696940b3f853d106a6ecfa5bd60ce8e72884efa3bd92b930da178fd616f40facad654212d7c2f8817dd4", hex_result);
 }
 
@@ -63,8 +72,10 @@ fn get_sha512_digest_passw0rd() {
 fn get_sha512_digest_server001superuser() {
     let hex_result: String = get_sha512_digest("server001superuser")
         .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+        .fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b:02x}");
+            output
+        });
     assert_eq!("cddab6bb2eaeaef88d39998fbd3aba5a88d7c378c300cdbcc162c5dedc3472de33873987731e95c7c0f0642a9ffefe7140ca255e797875015abb74a28f746125", hex_result);
 }
 
@@ -87,15 +98,17 @@ pub fn hash_cli_args(cli_args: &CliArguments) -> Vec<u8> {
 /// and return the first 120 characters as `String`.
 pub fn first120_from_full_sha512_hash(password_hashes: &[u8]) -> String {
     //convert binary hashes to string representation for same result as in cli
-    let hash: String = password_hashes
-        .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+    let hash: String = password_hashes.iter().fold(String::new(), |mut output, b| {
+        let _ = write!(output, "{b:02x}");
+        output
+    });
     let digest_result: String = digest::digest(&digest::SHA512, hash.as_bytes())
         .as_ref()
         .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+        .fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b:02x}");
+            output
+        });
     let first120 = &digest_result[..120];
     first120.to_string()
 }
@@ -107,7 +120,10 @@ pub fn create_argon2_salt(cli_args: &CliArguments) -> String {
     salt.push_str(&cli_args.account);
     let mut passwd_hash: Vec<u8> = Vec::new();
     passwd_hash.append(&mut get_sha512_digest(&salt));
-    let hash: String = passwd_hash.iter().map(|x| format!("{:02x}", &x)).collect();
+    let hash: String = passwd_hash.iter().fold(String::new(), |mut output, b| {
+        let _ = write!(output, "{b:02x}");
+        output
+    });
     let first32 = &hash[..32];
     // mimic the argon2 command and encode the password before using it.
     first32.to_base64_encoded_no_padding()
@@ -133,10 +149,13 @@ pub fn create_argon2_hash(input: &str, salt: &str) -> String {
 /// build password, of prefix + base64 encoded argon2 hash + suffix
 pub fn build_password(cli_args: &CliArguments, argon2_hash: &str) -> String {
     let argon2_hash_sha512 = get_sha512_digest(argon2_hash);
-    let agron2_sha512_hash: String = argon2_hash_sha512
-        .iter()
-        .map(|x| format!("{:02x}", &x))
-        .collect();
+    let agron2_sha512_hash: String =
+        argon2_hash_sha512
+            .iter()
+            .fold(String::new(), |mut output, b| {
+                let _ = write!(output, "{b:02x}");
+                output
+            });
     let mut password = cli_args.prefix.clone();
     let base64_digest_result = agron2_sha512_hash.to_base64_urlsafe_encoded();
     let used_digest_part = &base64_digest_result[..cli_args.length as usize];

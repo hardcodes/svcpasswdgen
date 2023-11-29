@@ -1,5 +1,6 @@
 pub mod base64_trait;
 pub mod cli_parser;
+pub mod clipboard;
 pub mod password;
 
 pub const PROGRAM_NAME: &str = env!("CARGO_PKG_NAME");

@@ -10,6 +10,7 @@ const ARG_MACHINE_NAME: &str = "arg-machine-name";
 const ARG_ACCOUNT_NAME: &str = "arg-account-name";
 const ARG_SEED_PASSWORD: &str = "arg-seed-password";
 const ARG_EXTRA_VALUE: &str = "arg-extra-value";
+const ARG_CLIPBOARD: &str = "arg-clipboard";
 const ARG_PREFIX: &str = "arg-prefix";
 const ARG_SUFFIX: &str = "arg-suffix";
 const ARG_SHA_LEN: &str = "arg-sha-len";
@@ -29,6 +30,14 @@ pub struct CliArguments {
     pub seed: String,
     pub length: u64,
     pub extra: Option<Vec<String>>,
+    pub flags: CliFlags,
+}
+
+/// Holds all command line flags
+#[derive(Clone, Debug)]
+pub struct CliFlags {
+    /// copy password to clipboard instead of printing it.
+    pub paste_password_to_clipboard: bool,
 }
 
 /// Parse the command line parameters with help of clap.
@@ -98,7 +107,14 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
                 .action(clap::ArgAction::Append)
                 .required(false),
         )
-        .after_help(r##"
+        .arg(
+            Arg::new(ARG_CLIPBOARD)
+                .long("clip")
+                .help("Copy created password to clipboard instead of printing it.")
+                .action(clap::ArgAction::SetTrue)
+                .required(false),
+        )
+        .after_help(r#"
         # EXAMPLES
 
         svcpasswdgen --machine server001 --account superuser --seed passw0rd
@@ -120,7 +136,7 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
         Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 
 
-        "##,)
+        "#,)
         .get_matches()
 }
 
@@ -129,7 +145,9 @@ pub fn parse_cli_parameters() -> clap::ArgMatches {
 pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
     // parse cli parameters and load the configuration
     let clap_arg_matches = parse_cli_parameters();
-
+    let flags = CliFlags {
+        paste_password_to_clipboard: clap_arg_matches.get_flag(ARG_CLIPBOARD),
+    };
     let seed_password: String = match clap_arg_matches.contains_id(ARG_SEED_PASSWORD) {
         true => clap_arg_matches
             .get_one::<String>(ARG_SEED_PASSWORD)
@@ -178,5 +196,6 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
             .get_one::<u64>(ARG_SHA_LEN)
             .ok_or("Cannot parse length")?,
         extra,
+        flags,
     })
 }
