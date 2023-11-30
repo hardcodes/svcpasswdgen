@@ -14,7 +14,7 @@ If you want to create an individual password for each machine
 
 ![](./docs/gfx/svcpasswdgen.gif)
 
-**WARNING**: Protecting the seed password is imperative! Should an attacker get hold of this password, also every machine is lost! Think carefully before using this tool. It might not be the right choice for you.
+**WARNING**: Protecting the seed password is imperative! Should an attacker get hold of this password, also every account using a generated password is lost! Think carefully before using this tool. It might not be the right choice for you.
 
 Using it on dedicated machines that are exclusively used for provisioning and can only create outgoing network connections may be a good start.
 
@@ -23,20 +23,19 @@ Use a long seed password (as in >= 64 characters long) to protect yourself again
 
 ## How does it work?
 
-`svcpassdgen` builds a hash (or digest) over the given arguments
+1. `svcpassdgen` builds a hash (or digest) over the given arguments
 
-- `--machine`,
-- `--account`,
-- `--seed` and
-- optional as many `--extra` as you pass in.
+  - `--machine`,
+  - `--account`,
+  - `--seed` and
+  - optional as many `--extra` as you pass in.
 
-
-1. All argument values (`--machine`, `--account`, `--seed` and `--extra`) are concatenated as a string and a sha512 sum is build over it and stored as hex representation, like the `sha512sum` command does.
-
-  The first 120 characters are used as input for the `argon2` hash algorithm.
+    A sha512 sum is built over all argument values (`--machine`, `--account`, `--seed` and `--extra`). Those sums are concatenated to a string and a final sha512 sum is build over the string and stored as hex representation, like the `sha512sum` command does.
+  
+    The first 120 characters are used as input for the `argon2` hash algorithm.
 2. `--machine`, `--account` are concatenated as a string and a sha512 sum is build over it. The first 32 characters are used to build a *salt* value for the `argon2` hash algorithm.
 
-  The result is then base64 encoded with no padding mimic the `argon2` cli tool.
+    The result is then base64 encoded with no padding mimic the `argon2` cli tool.
 3. The password results from the prefix, the `--length` characters of the base64 encoded final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy all of your possible password rules that need extra special characters.
 
 **HINT**: The longer the resulting password, the better. But if you must enter it somewhere manually, there will be a trade-off between security and convenience.
