@@ -41,7 +41,7 @@ pub struct CliFlags {
 }
 
 /// Parse the command line parameters with help of clap.
-pub fn parse_cli_parameters() -> clap::ArgMatches {
+fn parse_cli_parameters() -> clap::ArgMatches {
     let min_len: &'static str = Box::leak(MIN_SHA_LEN.to_string().into_boxed_str());
     clap::Command::new(PROGRAM_NAME)
         .version(PROGRAM_VERSION)
