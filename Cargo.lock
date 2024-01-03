@@ -640,7 +640,11 @@ checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
 name = "svcpasswdgen"
+<<<<<<< HEAD
 version = "2.1.1"
+=======
+version = "2.1.2"
+>>>>>>> clipboard
 dependencies = [
  "anyhow",
  "argon2",
