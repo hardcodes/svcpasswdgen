@@ -157,7 +157,7 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
             let env_seed_password = std::env::var(ENV_SEED_PASSWORD);
             match env_seed_password {
                 Ok(p) => p,
-                Err(_) => rpassword::prompt_password("Enter seed password: ")?,
+                Err(_) => prompt_for_seed_password()?,
             }
         }
     };
@@ -198,4 +198,17 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
         extra,
         flags,
     })
+}
+
+/// Prompt for seed password until at least one
+/// character was entered.
+fn prompt_for_seed_password() -> std::io::Result<String> {
+    let seed_password = loop {
+        let s = rpassword::prompt_password("Enter seed password: ")?;
+        if s.chars().count() >= 1 {
+            break s;
+        }
+        println!("Please use at least one character!");
+    };
+    Ok(seed_password)
 }
