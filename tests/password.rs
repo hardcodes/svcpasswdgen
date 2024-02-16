@@ -19,6 +19,7 @@ fn hash_cli_args_server001superuserpassw0rd() {
         account: SUPERUSER.to_string(),
         seed: PASSW0RD.to_string(),
         length: 20,
+        delay: 5,
         extra: None,
         flags: CliFlags {
             paste_password_to_clipboard: false,
@@ -42,6 +43,7 @@ fn build_password_server001superuserpassw0rd() {
         account: SUPERUSER.to_string(),
         seed: PASSW0RD.to_string(),
         length: 20,
+        delay: 5,
         extra: None,
         flags: CliFlags {
             paste_password_to_clipboard: false,

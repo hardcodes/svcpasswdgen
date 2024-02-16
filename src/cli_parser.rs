@@ -1,5 +1,5 @@
 use crate::{PROGRAM_AUTHORS, PROGRAM_DESCRIPTION, PROGRAM_NAME, PROGRAM_VERSION};
-use clap::{value_parser, Arg};
+use clap::{value_parser, Arg, ArgGroup};
 use std::error::Error;
 use std::fmt::Debug;
 use std::str;
@@ -11,14 +11,19 @@ const ARG_ACCOUNT_NAME: &str = "arg-account-name";
 const ARG_SEED_PASSWORD: &str = "arg-seed-password";
 const ARG_EXTRA_VALUE: &str = "arg-extra-value";
 const ARG_CLIPBOARD: &str = "arg-clipboard";
+const ARG_DELAY: &str = "arg-delay";
 const ARG_PREFIX: &str = "arg-prefix";
 const ARG_SUFFIX: &str = "arg-suffix";
 const ARG_SHA_LEN: &str = "arg-sha-len";
+const ARGGROUP_DELAY: &str = "arg-grp-delay";
 
 const ENV_SEED_PASSWORD: &str = "SEED_PASSWD";
 
 const MIN_SHA_LEN: u64 = 20;
 const MAX_SHA_LEN: u64 = 128;
+const DEFAULT_DELAY: &str = "20";
+const MIN_DELAY: u64 = 10;
+const MAX_DELAY: u64 = 300;
 
 /// Holds all command line arguments
 #[derive(Clone, Debug)]
@@ -29,6 +34,7 @@ pub struct CliArguments {
     pub account: String,
     pub seed: String,
     pub length: u64,
+    pub delay: u64,
     pub extra: Option<Vec<String>>,
     pub flags: CliFlags,
 }
@@ -114,6 +120,17 @@ fn parse_cli_parameters() -> clap::ArgMatches {
                 .action(clap::ArgAction::SetTrue)
                 .required(false),
         )
+        .arg(
+            Arg::new(ARG_DELAY)
+                .long("delay")
+                .value_name(ARG_DELAY)
+                .help("Number of seconds before the clipboard will be cleared.")
+                .num_args(1)
+                .default_value(DEFAULT_DELAY)
+                .value_parser(value_parser!(u64).range(MIN_DELAY..=MAX_DELAY))
+                .required(false),
+        )
+        .group(ArgGroup::new(ARGGROUP_DELAY).args([ARG_CLIPBOARD, ARG_DELAY]).multiple(true))
         .after_help(r#"
         # EXAMPLES
 
@@ -195,6 +212,9 @@ pub fn get_config() -> Result<CliArguments, Box<dyn Error>> {
         length: *clap_arg_matches
             .get_one::<u64>(ARG_SHA_LEN)
             .ok_or("Cannot parse length")?,
+        delay: *clap_arg_matches
+            .get_one::<u64>(ARG_DELAY)
+            .ok_or("Cannot parse delay")?,
         extra,
         flags,
     })
