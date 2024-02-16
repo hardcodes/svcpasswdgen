@@ -50,7 +50,7 @@ pub fn clear_clipboard(content: &str) -> Result<(), Box<dyn Error>> {
         }
     };
     if content == clipboard_content {
-        let empty_clipboard_value = if cfg!(windows) { "EMPTY" } else { "" };
+        let empty_clipboard_value = if cfg!(windows) { " " } else { "" };
 
         if let Err(e) = ctx.set_contents(empty_clipboard_value.to_owned()) {
             let box_err: Box<dyn Error> = format!("Could not clear clipboard: {}", e).into();
