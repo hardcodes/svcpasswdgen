@@ -1,11 +1,11 @@
 use std::error::Error;
+use std::{thread, time};
 use svcpasswdgen::cli_parser::get_config;
-use svcpasswdgen::clipboard::{paste_to_clipboard, clear_clipboard};
+use svcpasswdgen::clipboard::{clear_clipboard, paste_to_clipboard};
 use svcpasswdgen::password::{
     build_password, create_argon2_hash, create_argon2_salt, first120_from_full_sha512_hash,
     hash_cli_args,
 };
-use std::{thread, time};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let cli_args = get_config()?;
@@ -28,7 +28,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         true => {
             paste_to_clipboard(&password)?;
-            println!("Waiting {} seconds before clearing the clipboard.", cli_args.delay);
+            println!(
+                "Waiting {} seconds before clearing the clipboard.",
+                cli_args.delay
+            );
             thread::sleep(time::Duration::from_secs(cli_args.delay));
             clear_clipboard(&password)?;
         }
