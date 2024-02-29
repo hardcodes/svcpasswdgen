@@ -30,13 +30,13 @@ Use a long seed password (as in >= 64 characters long) to protect yourself again
   - `--seed` and
   - optional as many `--extra` as you pass in.
 
-    A sha512 sum is built over all argument values (`--machine`, `--account`, `--seed` and `--extra`). Those sums are concatenated to a string and a final sha512 sum is build over the string and stored as hex representation, like the `sha512sum` command does.
+    A sha512 sum is built over all argument values (`--machine`, `--account`, `--seed` and `--extra`) and stored as hex representation, like the `sha512sum` command does. Those hex converted sums are concatenated to a string and a final sha512 sum is build over the string and stored as hex representation.
   
     The first 120 characters are used as input for the `argon2` hash algorithm.
-2. `--machine`, `--account` are concatenated as a string and a sha512 sum is build over it. The first 32 characters are used to build a *salt* value for the `argon2` hash algorithm.
+2. `--machine`, `--account` are concatenated as a string and a sha512 sum is build over it and stored as hex representation. The first 32 characters are used to build a *salt* value for the `argon2` hash algorithm.
 
     The result is then base64 encoded with no padding mimic the `argon2` cli tool.
-3. The password results from the prefix, the `--length` characters of the base64 encoded final sha512 sum and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy all of your possible password rules that need extra special characters.
+3. The password results from the prefix, the `--length` characters of the base64 encoded final `argon2` hash and the suffix. The prefix and suffix do not add any security! How could they, beeing the same on each machine and account? They simply help to satisfy all of your possible password rules that need extra special characters.
 
 **HINT**: The longer the resulting password, the better. But if you must enter it somewhere manually, there will be a trade-off between security and convenience.
 
@@ -55,8 +55,8 @@ echo "SHA512SUM    :  ${SHA512SUM}"
 echo "used password:  ${USEDPWD}\n"
 ARGON2=$(echo -n "${USEDPWD}"|argon2 "${SALT}" -id -t 50 -m 16 -l 32 -v 13)
 echo ${ARGON2}
-ARGON2SHA512=$(echo -n "${ARGON2}"|grep "Hash:"|sed -E -e 's/\s//g'|cut -d ":" -f 2|xxd -r -p|base64 -w 0|sed -e 's/=//g'|sha512sum|cut -d " " -f 1)
-PASSWORD=$(echo -n ${ARGON2SHA512}|base64 -w 0)
+ARGON2SHASH=$(echo -n "${ARGON2}"|grep "Hash:"|sed -E -e 's/\s//g'|cut -d ":" -f 2|xxd -r -p|base64 -w 0|sed -e 's/=//g'|sha512sum|cut -d " " -f 1)
+PASSWORD=$(echo -n ${ARGON2SHASH}|base64 -w 0)
 echo "Pr3${PASSWORD:0:20}\$1X"
 ```
 
