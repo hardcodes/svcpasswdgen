@@ -122,6 +122,17 @@ echo -n "8657c024054195e2ee62a9d72663bfdda754018187bccb6086d6189416f473b2"|xxd -
     Enter seed password:
     Pr3SGFzaDoJCTA0ZGNhYTMw$1X
     ```
+- Paste the generated password to the clipboard:
+
+  ```bash
+  unset SEED_PASSWD
+  svcpasswdgen --machine server001 --account superuser --clip                
+  Enter seed password: 
+
+  Pasted password to clipboard.
+  Waiting 20 seconds before clearing the clipboard.
+  Cleared clipboard.
+  ```
 
 
 # Compile and install

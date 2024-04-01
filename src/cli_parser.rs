@@ -152,6 +152,12 @@ fn parse_cli_parameters() -> clap::ArgMatches {
         Enter seed password:
         Pr3YWQ0ZjE2ZDZlOWYxMjkw$1X
 
+        svcpasswdgen --machine server001 --account superuser --clip                
+        Enter seed password: 
+
+        Pasted password to clipboard.
+        Waiting 20 seconds before clearing the clipboard.
+        Cleared clipboard.
 
         "#,)
         .get_matches()
