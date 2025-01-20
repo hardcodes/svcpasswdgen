@@ -3,6 +3,7 @@ use clap::{value_parser, Arg, ArgGroup};
 use std::error::Error;
 use std::fmt::Debug;
 use std::str;
+use zeroize::Zeroize;
 
 pub const DEFAULT_PREFIX: &str = "Pr3";
 pub const DEFAULT_SUFFIX: &str = "$1X";
@@ -37,6 +38,19 @@ pub struct CliArguments {
     pub delay: u64,
     pub extra: Option<Vec<String>>,
     pub flags: CliFlags,
+}
+
+impl Drop for CliArguments {
+    fn drop(&mut self) {
+        self.prefix.zeroize();
+        self.suffix.zeroize();
+        self.machine.zeroize();
+        self.account.zeroize();
+        self.seed.zeroize();
+        self.length.zeroize();
+        self.delay.zeroize();
+        self.extra.zeroize();
+    }
 }
 
 /// Holds all command line flags

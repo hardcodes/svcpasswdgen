@@ -1,6 +1,6 @@
 [package]
 name = "svcpasswdgen"
-version = "2.1.4"
+version = "2.1.5"
 edition = "2021"
 authors = ["Sven Putze <github@hardcodes.de>"]
 description = "Create deterministic passwords from input data"
@@ -9,12 +9,14 @@ description = "Create deterministic passwords from input data"
 
 [dependencies]
 anyhow = "1"
-argon2 = "0.5.0"
+argon2 = { version = "0.5.0", features = ["zeroize"] }
 base64 = "0.22"
 clap = { version = "4", features = ["wrap_help"] }
 copypasta = "0.10.0"
+rand = { version = "0.8"}
 ring = "0.17"
 rpassword = "7"
+zeroize = "1.8"
 
 
 [profile.release]
